@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Пример обработки функции в React js</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<!-- Вся необходимая фигня, для того, чтобы можно было без всяких СЛОЖНЫХ настроек проявлять React код в script теге -->
+	<script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+	<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+	<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+
+
+	<style>
+		#colorHeading{
+			padding:0;
+			margin:50px;
+			margin-bottom:-20px;
+			font-family:sans-serif;
+		}
+
+		#container{
+			padding: 50px;
+			background-color: #FFF;
+		}
+
+		.colorSquare{
+			box-shadow: 0 0 25px 0 #333;
+			width: 242px;
+			height: 242px;
+			margin-bottom: 15px;
+		}
+
+		.colorArea input{
+			padding: 10px ;
+			font-size: 16px;
+			border: 2px solid #CCC;
+		}
+
+		.colorArea button{
+			padding: 10px;
+			font-size:16px;
+			margin:10px;
+			background-color: #666;
+			color: #FFF;
+			border: 2px solid #666;
+		}
+
+		.colorArea button: hover{
+			background-color: #111;
+			border-color: #111;
+			cursor: pointer;
+		}
+
+	</style>
+</head>
+
+
+<body>
+	<h1 id="colorHeading">Палитра</h1>
+
+	<div id="container"></div>
+
+	<script type="text/babel">
+
+		class Colorizer extends React.Component{
+			constructor(props){
+				super(props);
+				this.state={
+					color:'',
+					bgColor:'white'
+				};
+
+				this.colorValue = this.colorValue.bind(this);
+				this.setNewColor = this.setNewColor.bind(this);
+			}
+
+			colorValue(e){
+				this.setState({
+					color: e.target.value/* С помощью e.target.value мы принимаем значение полученное от input */
+				});
+			}
+
+			setNewColor(e){
+				this.setState({
+					bgColor:this.state.color/* Задний фон становится тем, который был задан в строке */
+				});
+
+				this._input.focus();/* Благодаря этому методу, происходит фокусировка на элементе ввода. В том смысле, что после ввода значения и нажатия на ОК, у нас фокусировка на месте ввода значения не пропадает и можно сразу же начинать писать*/
+				this._input.value="";/* Вызов данного метода, очищает введенное значение */
+
+				e.preventDefault();
+				/*preventDefault - уничтожаем обыкновенное поведение странички(Перезагрузка странички)*/
+			}
+
+			render(){
+				var squareStyle={
+					backgroundColor: this.state.bgColor/* Здесь приравнивается задний фон, к переменной заднего фона, которая указана выше */
+				};
+
+				var self = this;
+
+				return(
+					<div className="colorArea">
+						<div style={squareStyle} className="colorSquare"></div>
+						{/* Код ниже отправляет полученный цвет в функцию setNewColor */}
+						<form onSubmit={this.setNewColor}>
+							{/* Код ниже принимает название цвета и изменяет значение color,на то, которое было введено */}
+							<input onChange={this.colorValue} 
+							ref={
+								(el) => this._input=el/* Объяснение данной функции с страницы 200* */
+							} 
+							placeholder="Значение цвета(eng)"></input>
+							<button type="submit">OK</button>
+						</form>
+
+						<ColorLabel color={this.state.bgColor}/>
+					</div>	
+				);
+			}
+		}
+
+		var heading = document.querySelector("#colorHeading");
+
+		class ColorLabel extends React.Component{/* Данный класс, отвечает за то, чтобы к слову "Палитра", прибавить ":" и так же то значение, которое было вписано */
+			render(){
+				return ReactDOM.createPortal(/*Метод ReactDOM.createPortal() принимает два аргумента: JSX для вывода и элемент DOM для выводда данного JSX-контента. */
+					":" + this.props.color,
+					heading
+				);
+			}
+		}
+
+		ReactDOM.render(
+			<div>
+				<Colorizer />
+			</div>,
+			document.querySelector("#container")
+		);
+	</script>
+</body>
+</html>
